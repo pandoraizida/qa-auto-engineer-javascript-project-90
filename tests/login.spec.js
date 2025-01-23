@@ -1,6 +1,7 @@
 import { test, expect } from '@playwright/test';
 import LoginPage from '../pages/loginPage';
 import AdminPage from '../pages/adminPage';
+import { userCreds } from '../tests/constants';
 
 test.describe('Check Login page', () => {
 
@@ -17,7 +18,7 @@ test.describe('Check Login page', () => {
     await expect(loginPage.loginButton).toBeVisible();
   });
 
-  test('Error message for empty auth fild is displayed', async ({ page }) => {
+  test('Error message "Required" for empty auth fild is displayed', async ({ page }) => {
     const loginPage = new LoginPage(page);
     await loginPage.clickLoginButton();
     await expect(loginPage.errorMessage).toBeVisible();
@@ -25,7 +26,7 @@ test.describe('Check Login page', () => {
 
   test('Successful login and logout', async ({ page }) => {
     const loginPage = new LoginPage(page);
-    await loginPage.login();
+    await loginPage.login(userCreds);
 
     const adminPage = new AdminPage(page);
     await expect(adminPage.adminPageHeader).toBeVisible();
