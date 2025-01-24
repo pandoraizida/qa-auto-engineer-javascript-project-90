@@ -45,7 +45,7 @@ export default class BoardElements extends TableElements {
         const targetBox = await target.boundingBox();
         await source.hover();
         await this.page.mouse.down();
-        await this.page.mouse.move(targetBox.x + targetBox.width / 2, targetBox.y + targetBox.height / 2, {steps: 10});
+        await this.page.mouse.move(targetBox.x + targetBox.width / 2, targetBox.y + targetBox.height / 2, { steps: 10 });
         await this.page.mouse.up();
     }
 
