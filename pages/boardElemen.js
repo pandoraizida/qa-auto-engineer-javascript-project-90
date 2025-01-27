@@ -58,7 +58,8 @@ export default class BoardElements extends TableElements {
         await expect(column.locator('.MuiCard-root')).toHaveCount(number);
     }
 
-    async expectHeadersVisability(elements) {
+    async expectHeadersVisability(userdata) {
+        const elements = Object.values(userdata);
         elements.forEach((elem) => {
           expect(this.page.getByRole('heading', { name: elem })).toBeVisible();
         })

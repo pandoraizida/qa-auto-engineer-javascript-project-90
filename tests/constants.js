@@ -1,21 +1,31 @@
+import { faker } from '@faker-js/faker';
+
 export const userCreds = {
-  username: 'username',
-  password: 'password'
+    username: faker.internet.username(),
+    password: faker.internet.password(),
 }
 
 export const userData = {
-    'Email': 'test@gmail.com',
-    'First name': 'Firstname',
-    'Last name': 'Lastname'
+    'Email': faker.internet.email(),
+    'First name': faker.person.firstName(),
+    'Last name': faker.person.lastName(),
 }
 
 export const labelData = {
-    'Name': 'research'
+    'Name': faker.lorem.word(6)
 }
 
 export const statusData = {
-    'Name': 'Open',
-    'Slug': 'open',
+    'Name': faker.lorem.word(5),
+    'Slug': faker.lorem.word(5)
+}
+
+export const taskData = {
+  assignee: 'sarah@example.com',
+  title: faker.lorem.word(6),
+  content: faker.lorem.word(8),
+  status: 'To Review',
+  label: 'task'
 }
 
 export const itemCount = {
@@ -25,10 +35,18 @@ export const itemCount = {
     task: 15
 }
 
-export const taskData = {
-  assignee: 'sarah@example.com',
-  title: 'Checking',
-  content: 'To check test conditions',
-  status: 'To Review',
-  label: 'task'
-};
+export const taskStatus = {
+  draft: 'Draft',
+  toReview: 'To Review',
+  toBeFixed: 'To Be Fixed',
+  toPublish: 'To Publish',
+  published: 'Published'
+}
+
+export const taskCountWithStatus = {
+  draft: 3,
+  toReview: 3,
+  toBeFixed: 3,
+  toPublish: 3,
+  published: 3
+}

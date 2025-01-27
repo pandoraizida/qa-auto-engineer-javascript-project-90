@@ -1,57 +1,51 @@
-import { test, expect } from '@playwright/test';
-import LoginPage from '../../pages/loginPage';
-import AdminPage from '../../pages/adminPage';
-import BoardElements from '../../pages/boardElemen';
-import { userCreds, itemCount } from '../constants';
+import { expect } from '@playwright/test';
+import { itemCount, taskStatus, taskCountWithStatus } from '../constants';
+import { test } from '../../fixtures/authFixture';
+
+const increasedTaskCountWithStatus = 4;
+const decreasedTaskCountWithStatus = 2;
+const taskCountFilteredByAssignee = 5;
+const taskCountFilteredByStatus = 3;
+const taskCountFilteredByLabel = 2;
+const taskCountMultiFiltered = 1;
 
 test.describe('Check interactions with board', () => {
 
-    test.beforeEach(async ({ page }) => {
-      const loginPage = new LoginPage(page);
-      await loginPage.goto();
-      await loginPage.login(userCreds);
-
-      const adminPage = new AdminPage(page);
+    test.beforeEach(async ({ adminPage, boardElem }) => {
       await adminPage.openPage('Tasks');
 
-      const boardElem = new BoardElements(page);
       await boardElem.expectCardsCount(itemCount.task);
     });
-  
-    test.afterEach(async ({ page }) => {
-      const adminPage = new AdminPage(page);
-      await adminPage.logout();
-    });
 
-    test('D&D task card is works as expected', async ({ page }) => {
-      const boardElem = new BoardElements(page);
-      await boardElem.expectTaskCountWithStatus('Draft', 3);
-      await boardElem.expectTaskCountWithStatus('Published', 3);
+    test('D&D task card is works as expected', async ({ boardElem }) => {
+      await boardElem.expectTaskCountWithStatus(taskStatus.draft, taskCountWithStatus.draft);
+      await boardElem.expectTaskCountWithStatus(taskStatus.published, taskCountWithStatus.published);
     
-      await boardElem.dragAndDropFirsCardTo('Published');
-      await boardElem.expectTaskCountWithStatus('Draft', 2);
-      await boardElem.expectTaskCountWithStatus('Published', 4);
+      await boardElem.dragAndDropFirsCardTo(taskStatus.published);
+
+      await boardElem.expectTaskCountWithStatus(taskStatus.draft, decreasedTaskCountWithStatus);
+      await boardElem.expectTaskCountWithStatus(taskStatus.published, increasedTaskCountWithStatus);
     });
 
     [
-      { filterField: 'Assignee', valueToSelect: 'jack@yahoo.com', expectedTaskCount: 5 },
-      { filterField: 'Status', valueToSelect: 'To Publish', expectedTaskCount: 3 },
-      { filterField: 'Label', valueToSelect: 'bug', expectedTaskCount: 2 }
+      { filterField: 'Assignee', valueToSelect: 'jack@yahoo.com', expectedTaskCount: taskCountFilteredByAssignee },
+      { filterField: 'Status', valueToSelect: 'To Publish', expectedTaskCount: taskCountFilteredByStatus },
+      { filterField: 'Label', valueToSelect: 'bug', expectedTaskCount: taskCountFilteredByLabel }
     ].forEach(({ filterField, valueToSelect, expectedTaskCount }) => {
-        test(`Filtering by ${filterField} works as expected`, async ({ page }) => {
-          const boardElem = new BoardElements(page);
+        test(`Filtering by ${filterField} works as expected`, async ({ boardElem }) => {
           await boardElem.selectDropdownValue(filterField, valueToSelect);
+
           await expect(boardElem.addFilterButton).toBeVisible();
           await boardElem.expectCardsCount(expectedTaskCount);
         });
     });
 
-    test('Multiple filtering works as expected', async ({ page }) => {
-      const boardElem = new BoardElements(page);
+    test('Multiple filtering works as expected', async ({ boardElem }) => {
         await boardElem.selectDropdownValue('Assignee', 'alice@hotmail.com');
         await boardElem.selectDropdownValue('Status', 'To Be Fixed');
         await boardElem.selectDropdownValue('Label', 'feature');
+        
         await expect(boardElem.addFilterButton).toBeVisible();
-        await boardElem.expectCardsCount(1);
+        await boardElem.expectCardsCount(taskCountMultiFiltered);
     });
 })
